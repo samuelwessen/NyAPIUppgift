@@ -143,5 +143,19 @@ namespace WebApiWithAuth.Services
 
             return false;
         }
+
+
+        //för att kunna söka på STATUS
+        public async Task<IEnumerable<Errand>> Search(string status)
+        {
+            IQueryable<Errand> query = _context.Errands;
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(e => e.Status.Contains(status));
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

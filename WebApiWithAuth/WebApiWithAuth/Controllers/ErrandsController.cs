@@ -15,7 +15,7 @@ namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ErrandsController : ControllerBase
     {
         private readonly SqlDbContext _context;
@@ -46,6 +46,28 @@ namespace WebApi.Controllers
             }
 
             return errand;
+        }
+
+
+        [HttpGet("{search}/{status}")]
+        public async Task<ActionResult<Errand>> Search(string status)
+        {
+            try
+            {
+                var result = await _identity.Search(status);
+
+                if (result.Any())
+                {
+                    return Ok(result);
+                }
+
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
         }
 
         // PUT: api/Errands/5
