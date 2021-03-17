@@ -115,26 +115,6 @@ namespace WebApi.Controllers
 
 
 
-
-
-        //funkar inte 
-        [HttpGet("hej/{createddate}")]
-        public async Task<ActionResult<Errand>> Datum(string createddate)
-        {
-            var date = from d in _context.Errands
-                       select d;
-
-            if (!string.IsNullOrEmpty(createddate))
-            {
-                date = date.Where(e => e.Created.ToString().Contains(createddate));
-
-                
-            }
-
-            return Ok(await date.ToListAsync());
-        }
-
-
         // PUT: api/Errands/5        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutErrand(int id, Errand errand)
