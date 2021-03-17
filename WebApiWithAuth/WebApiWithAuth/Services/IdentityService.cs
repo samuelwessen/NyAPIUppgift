@@ -146,7 +146,7 @@ namespace WebApiWithAuth.Services
 
 
         //för att kunna söka på STATUS
-        public async Task<IEnumerable<Errand>> Search(string status)
+        public async Task<IEnumerable<Errand>> SearchStatusAsync(string status)
         {
             IQueryable<Errand> query = _context.Errands;
 
@@ -156,6 +156,35 @@ namespace WebApiWithAuth.Services
             }
 
             return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Errand>> SearchCustomerAsync(string customername)
+        {
+            IQueryable<Errand> query = _context.Errands;
+
+            if (!string.IsNullOrEmpty(customername))
+            {
+                query = query.Where(e => e.CustomerName.Contains(customername));
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Errand>> SearchCreatedDateAsync(string createddate)
+        {
+            IQueryable<Errand> result = _context.Errands;
+
+
+            if (DateTime.TryParse(createddate, out DateTime pdatetime))
+            {
+                result = result.Where(x => x.Created > pdatetime);
+            }
+            else if (createddate == "latest")
+            {
+                result = result.OrderByDescending(x => x.Created);
+            }
+
+            return await result.ToListAsync();
         }
     }
 }

@@ -14,7 +14,10 @@ namespace WebApiWithAuth.Services
         Task<bool> CreateErrandAsync(CreateErrandViewModel model);
         Task<SignInResponse> SignInAsync(string email, string password);
 
-        Task<IEnumerable<Errand>> Search(string status);
+        Task<IEnumerable<Errand>> SearchStatusAsync(string status);
+        Task<IEnumerable<Errand>> SearchCustomerAsync(string customername);
+        Task<IEnumerable<Errand>> SearchCreatedDateAsync(string createddate);
+
 
         Task<IEnumerable<UserResponse>> GetUsersAsync();
 

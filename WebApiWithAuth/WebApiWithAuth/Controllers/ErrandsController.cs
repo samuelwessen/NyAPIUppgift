@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -27,12 +28,14 @@ namespace WebApi.Controllers
             _identity = identity;
         }
 
+
         // GET: api/Errands
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Errand>>> GetErrands()
         {
             return await _context.Errands.ToListAsync();
         }
+
 
         // GET: api/Errands/5
         [HttpGet("{id}")]
@@ -49,12 +52,12 @@ namespace WebApi.Controllers
         }
 
 
-        [HttpGet("{search}/{status}")]
-        public async Task<ActionResult<Errand>> Search(string status)
+        [HttpGet("searchstatus/{status}")]
+        public async Task<ActionResult<Errand>> SearchStatus(string status)
         {
             try
             {
-                var result = await _identity.Search(status);
+                var result = await _identity.SearchStatusAsync(status);
 
                 if (result.Any())
                 {
@@ -70,8 +73,69 @@ namespace WebApi.Controllers
             }
         }
 
-        // PUT: api/Errands/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        [HttpGet("searchcustomer/{customername}")]
+        public async Task<ActionResult<Errand>> SearchCustomer(string customername)
+        {
+            try
+            {
+                var result = await _identity.SearchCustomerAsync(customername);
+
+                if (result.Any())
+                {
+                    return Ok(result);
+                }
+
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+        }
+
+
+        [HttpGet("searchcreateddate/{createddate}")]
+        public async Task<ActionResult<Errand>> SearchCreatedDate(string createddate)
+        {
+            try
+            {
+                var result = await _identity.SearchCreatedDateAsync(createddate);
+
+                return Ok(result);              
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+        }
+
+
+
+
+
+        //funkar inte 
+        [HttpGet("hej/{createddate}")]
+        public async Task<ActionResult<Errand>> Datum(string createddate)
+        {
+            var date = from d in _context.Errands
+                       select d;
+
+            if (!string.IsNullOrEmpty(createddate))
+            {
+                date = date.Where(e => e.Created.ToString().Contains(createddate));
+
+                
+            }
+
+            return Ok(await date.ToListAsync());
+        }
+
+
+        // PUT: api/Errands/5        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutErrand(int id, Errand errand)
         {
@@ -115,8 +179,7 @@ namespace WebApi.Controllers
 
 
 
-        // POST: api/Errands
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // POST: api/Errands        
         [HttpPost]
         public async Task<ActionResult<Errand>> PostErrand(Errand errand)
         {
